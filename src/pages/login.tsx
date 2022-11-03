@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type { NextPage } from 'next';
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import axios from 'axios';
 import { UserContext } from './_app';
@@ -22,12 +22,19 @@ const LoginPage: NextPage = () => {
   const router = useRouter();
   const context = useContext(UserContext);
   const { userId, userName, setUserId, setUserName, isLoggedIn, setIsLoggedIn } = context;
-  // useEffect(() => {
-  //   checkIdValidation();
-  // }, [typedId]);
-  // useEffect(() => {
-  //   checkPwValidtaion();
-  // }, [typedPw]);
+
+  useEffect(() => {
+    const userLoggedInLocalStorage = localStorage.getItem('isLoggedin');
+    console.log('thisisuserLoggedInLocalStorage', userLoggedInLocalStorage);
+    if (userLoggedInLocalStorage) {
+      setIsLoggedIn(userLoggedInLocalStorage);
+    }
+    console.log('thisisisLoggedIn', isLoggedIn);
+    if (isLoggedIn || userLoggedInLocalStorage) {
+      console.log('야호');
+      router.push('/');
+    }
+  }, []);
 
   const checkIdValidation = () => {
     const IdValidationCondition = /^[A-Za-z0-9]{5,30}$/;
@@ -48,6 +55,7 @@ const LoginPage: NextPage = () => {
       setPwError(false);
     }
   };
+
   return (
     <>
       <Header>

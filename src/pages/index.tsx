@@ -3,8 +3,10 @@ import type { NextPage } from 'next';
 import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { UserContext } from './_app';
+import { useRouter } from 'next/router';
 const HomePage: NextPage = () => {
   const context = useContext(UserContext);
+  const router = useRouter();
   const { userId, userName, setUserId, setUserName, isLoggedIn, setIsLoggedIn } = context;
 
   useEffect(() => {
@@ -21,6 +23,15 @@ const HomePage: NextPage = () => {
       setIsLoggedIn(userLoggedInLocalStorage);
     }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('id');
+    localStorage.removeItem('name');
+    localStorage.removeItem('isLoggedin');
+    setUserId('');
+    setUserName('');
+    setIsLoggedIn(false);
+  };
   return (
     <>
       <Header>
@@ -34,7 +45,13 @@ const HomePage: NextPage = () => {
                 <p>{userName}</p>
               </div>
               <div>
-                <p>logout</p>
+                <p
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                >
+                  logout
+                </p>
               </div>
             </>
           ) : (
