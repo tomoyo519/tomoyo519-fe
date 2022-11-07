@@ -1,9 +1,37 @@
 import Link from 'next/link';
 import type { NextPage } from 'next';
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
-
+import { UserContext } from './_app';
+import { useRouter } from 'next/router';
 const HomePage: NextPage = () => {
+  const context = useContext(UserContext);
+  const router = useRouter();
+  const { userId, userName, setUserId, setUserName, isLoggedIn, setIsLoggedIn } = context;
+
+  useEffect(() => {
+    const userIdLocalStorage = localStorage.getItem('id');
+    const userNameLocalStorage = localStorage.getItem('name');
+    const userLoggedInLocalStorage = localStorage.getItem('isLoggedin');
+    if (userIdLocalStorage) {
+      setUserId(userIdLocalStorage);
+    }
+    if (userNameLocalStorage) {
+      setUserName(userNameLocalStorage);
+    }
+    if (userLoggedInLocalStorage) {
+      setIsLoggedIn(userLoggedInLocalStorage);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('id');
+    localStorage.removeItem('name');
+    localStorage.removeItem('isLoggedin');
+    setUserId('');
+    setUserName('');
+    setIsLoggedIn(false);
+  };
   return (
     <>
       <Header>
@@ -11,7 +39,24 @@ const HomePage: NextPage = () => {
           <Title>HAUS</Title>
         </Link>
         <Link href='/login'>
-          <p>login</p>
+          {isLoggedIn ? (
+            <>
+              <div>
+                <p>{userName}</p>
+              </div>
+              <div>
+                <p
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                >
+                  logout
+                </p>
+              </div>
+            </>
+          ) : (
+            <p>login</p>
+          )}
         </Link>
       </Header>
       <Container>
