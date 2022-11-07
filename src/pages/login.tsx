@@ -31,7 +31,6 @@ const LoginPage: NextPage = () => {
     }
     console.log('thisisisLoggedIn', isLoggedIn);
     if (isLoggedIn || userLoggedInLocalStorage) {
-      console.log('야호');
       router.push('/');
     }
   }, []);
@@ -88,6 +87,7 @@ const LoginPage: NextPage = () => {
         />
         {pwError && <IdErrorMsg>올바른 비밀번호 형식으로 입력해주세요.</IdErrorMsg>}
         <LoginButton
+          disabled={idError || pwError}
           idError={idError}
           pwError={pwError}
           onClick={() =>
