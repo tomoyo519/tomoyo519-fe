@@ -1,44 +1,56 @@
-import Link from 'next/link';
-import type { NextPage } from 'next';
-import React from 'react';
+import axios from 'axios';
+import type { NextPage, GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import products from '../../api/data/products.json';
-
 const ProductDetailPage: NextPage = () => {
-  const product = products[0];
+  const [productInfo, setProductInfo] = useState<any>([]);
+  const [error, setError] = useState<boolean>(false);
+  const router = useRouter();
+  const id = Array.isArray(router?.query?.id)
+    ? router?.query?.id.join('')
+    : router?.query?.id || '';
+
+  useEffect(() => {
+    getProductInfo();
+  }, [id]);
+
+  const getProductInfo = async () => {
+    const res = await axios
+      .get(`/products/${id}`)
+      .then((res) => {
+        setProductInfo(res.data.data);
+      })
+      .catch((err) => {
+        setError(true);
+      });
+  };
 
   return (
     <>
-      <Header>
-        <Link href='/'>
-          <Title>HAUS</Title>
-        </Link>
-        <Link href='/login'>
-          <p>login</p>
-        </Link>
-      </Header>
-      <Thumbnail src={product.thumbnail ? product.thumbnail : '/defaultThumbnail.jpg'} />
-      <ProductInfoWrapper>
-        <Name>{product.name}</Name>
-        <Price>{product.price}원</Price>
-      </ProductInfoWrapper>
+      {error ? (
+        <ErrorMsg>존재하지 않는 상품입니다.</ErrorMsg>
+      ) : (
+        <>
+          <Thumbnail
+            src={
+              productInfo?.product?.thumbnail
+                ? productInfo?.product?.thumbnail
+                : '/defaultThumbnail.jpg'
+            }
+          />
+          <ProductInfoWrapper>
+            <Name>{productInfo?.product?.name}</Name>
+            <Price>{productInfo?.product?.price?.toLocaleString('ko-KR')}원</Price>
+          </ProductInfoWrapper>
+        </>
+      )}
     </>
   );
 };
 
 export default ProductDetailPage;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-`;
-
-const Title = styled.a`
-  font-size: 48px;
-`;
 
 const Thumbnail = styled.img`
   width: 100%;
@@ -50,12 +62,19 @@ const ProductInfoWrapper = styled.div`
   padding: 0 20px;
 `;
 
-const Name = styled.div`
+const Name = styled.h3`
   font-size: 20px;
   font-weight: bold;
 `;
 
-const Price = styled.div`
+const Price = styled.span`
   font-size: 18px;
   margin-top: 8px;
+`;
+
+const ErrorMsg = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

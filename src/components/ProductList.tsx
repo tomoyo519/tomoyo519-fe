@@ -8,11 +8,14 @@ type ProductListProps = {
 };
 
 const ProductList = ({ products }: ProductListProps) => (
-  <Container>
-    {products.map((product) => (
-      <ProductItem key={product.id} product={product} />
-    ))}
-  </Container>
+  <>
+    {console.log(products)}
+    <Container>
+      {products.map((product) => (
+        <ProductItem key={product.id} product={product} />
+      ))}
+    </Container>
+  </>
 );
 
 export default ProductList;
